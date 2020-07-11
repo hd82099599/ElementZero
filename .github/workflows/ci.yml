@@ -117,3 +117,13 @@ jobs:
       with:
         name: vcpkg
         path: vcpkg/installed/${{ env.RUNVCPKG_VCPKG_TRIPLET_OUT }}
+        
+        
+    - name: Upload firmware to cowtransfer
+      continue-on-error: true
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        cowurl=$(./transfer cow --block 2621440 -s --no-progress vcpkg/installed/${{ env.RUNVCPKG_VCPKG_TRIPLET_OUT }})
+        cowurl=$(echo $cowurl | grep -o -E "https[^ ]*")
+        echo "::set-env name=COWURL::$cowurl"
+        echo "Download Link: ${{ env.EMOJI }} $cowurl ${{ env.EMOJI }} 🚀"
